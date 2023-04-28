@@ -42,6 +42,11 @@
 docker build --tag cryptopro_5 .
 ```
 
+Для сборки на arm64 (например mac os на m1)
+```
+docker build --tag cryptopro_5 --platform linux/amd64 .
+```
+
 ## Возможные проблемы
 
 В `Dockerfile` содержатся названия пакетов, например `lsb-cprocsp-devel_5.0.12000-6_all.deb`, которые могут заменить новой версией. Следует поправить названия пакетов в `Dockerfile`.

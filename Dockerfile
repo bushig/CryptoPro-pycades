@@ -1,4 +1,4 @@
-FROM python:3.10.6 AS build
+FROM python:3.10.11 AS build
 
 LABEL developer="Miloslavskiy Sergey"
 LABEL maintainer="MiloslavskiySergey@yandex.ru"
@@ -33,16 +33,17 @@ WORKDIR /cprocsp
 RUN set -ex && \
     tar xvf linux-amd64_deb.tgz && \
     ./linux-amd64_deb/install.sh && \
+    ls linux-amd64_deb -lah && \
     # Install cprocsp-devel package
     apt-get install ./linux-amd64_deb/lsb-cprocsp-devel_*.deb
 
 # Download the archive from the CruptoPro EDS SDK (https://cryptopro.ru/products/cades/downloads), unpack this archive
 # and install the cprocsp-pki-cades package (version 2.0.14071 or later)
 RUN set -ex && \
-    curl -O https://cryptopro.ru/sites/default/files/products/cades/current_release_2_0/cades-linux-amd64.tar.gz && \
     mkdir ./cades-linux-amd64 && \
     tar xvf cades-linux-amd64.tar.gz -C ./cades-linux-amd64 && \
-    apt-get install ./cades-linux-amd64/cprocsp-pki-cades-*amd64.deb
+    ls -lah ./cades-linux-amd64/ && \
+    dpkg -i ./cades-linux-amd64/cprocsp-pki-cades-64_2.0.14530-1_amd64.deb
 
 # Download and extract the pycades source archive
 # (https://cryptopro.ru/sites/default/files/products/cades/pycades/pycades.zip)
@@ -64,7 +65,7 @@ RUN set -ex && \
     make -j4
 
 
-FROM python:3.10.6
+FROM python:3.10.11
 # Adding a new layer
 # ENV PYCADES="pycades_0.1.30636"
 # Copying CryptoPro and expanding pycades from the previous stage
@@ -82,11 +83,6 @@ RUN set -ex && \
     apt-get install -y --no-install-recommends expect && \
     apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/*
-
-# Copying bash scripts for container operation via command
-ADD scripts /scripts
-
-ADD certificates /certificates
 
 # Creation of symbolic links in the contaioner so that CryptoPro functions can be performed via the command line
 RUN cd /bin && \
@@ -109,17 +105,21 @@ ENV LANG C.UTF-8
 RUN mkdir /AppFastApi && \
     mkdir /AppFastApi/static
 
+# Copying bash scripts for container operation via command
+ADD scripts /scripts
+
+ADD certificates /certificates
+
 WORKDIR /AppFastApi
 
-RUN apt-get update -y && \
-    pip install poetry && \
-    pip install --upgrade pip
-#    apt-get autoremove -y && \
-#    rm -rf /var/lib/apt/lists/*
+RUN pip install poetry==1.4.2 --no-cache-dir && \
+    poetry config virtualenvs.create false && \
+    pip install --upgrade pip --no-cache-dir
 
+COPY /AppFastApi/pyproject.toml /AppFastApi/pyproject.toml
+RUN poetry install --no-interaction --no-ansi --no-cache
 COPY /AppFastApi /AppFastApi
 
-RUN poetry install
 
 #CMD poetry run uvicorn main:app --host 0.0.0.0 --port 80
 

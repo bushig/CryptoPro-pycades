@@ -1,0 +1,17 @@
+#!/bin/bash
+
+#
+# Установка сертификатов пользователя для проверки и подписания
+#
+
+cd "$(dirname "$0")"
+source lib/colors.sh
+source lib/functions.sh
+
+dir=`mktemp -d`
+cd "$dir"
+cat - > "bundle.pfx"
+
+
+certmgr -install -store uMy -file "bundle.pfx" -pfx -at_signature -silent
+

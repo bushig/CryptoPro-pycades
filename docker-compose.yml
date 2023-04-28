@@ -3,8 +3,16 @@ version: '3.10'
 services:
   crypto-pro:
     container_name: crypto-pro
-    image: ghcr.io/devind-team/cryptopro-pycades:latest
-    command: poetry run uvicorn main:app --host 0.0.0.0 --port 80
+    platform: linux/amd64
+#    image: ghcr.io/devind-team/cryptopro-pycades:latest
+    volumes:
+      - ./AppFastApi/:/AppFastApi/
+      - ./static/:/static
+      - ./scripts/:/scripts
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: poetry run uvicorn main:app --host 0.0.0.0 --port 8095 --reload
     restart: always
     ports:
-      - '8095:80'
+      - '8095:8095'

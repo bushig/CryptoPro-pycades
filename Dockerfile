@@ -102,8 +102,7 @@ ENV PYTHONUNBUFFERED 1
 ENV PATH /usr/local/bin:$PATH
 ENV LANG C.UTF-8
 
-RUN mkdir /AppFastApi && \
-    mkdir /AppFastApi/static
+RUN mkdir /AppFastApi && mkdir /static
 
 # Copying bash scripts for container operation via command
 ADD scripts /scripts

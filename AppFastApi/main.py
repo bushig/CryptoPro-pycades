@@ -105,7 +105,7 @@ async def private_key_pfx(file: UploadFile = File(..., description="Файл в 
         os.remove(user_certificate)
         return JSONResponse(content={'status': 'Private key installed'})
     else:
-        return JSONResponse(content={'error': 'Invalid file format. Desired format <*.zip>'})
+        return JSONResponse(content={'error': 'Invalid file format. Desired format <*.pfx>'})
 
 @app.post('/license')
 async def license_number(serial_number: str):

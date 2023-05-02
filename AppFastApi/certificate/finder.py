@@ -16,13 +16,6 @@ async def signature_data():
     signer.CheckCertificate = True
     return signer
 
-async def get_signer_by_thumbprint(thumbprint: str):
-    certificate = await store_data()
-    signer = pycades.Signer()
-    signer.Certificate = certificate.Item(1)
-    signer.CheckCertificate = True
-    return signer
-
 
 async def signature_data_pin(pin: str):
     certificate = await store_data()
